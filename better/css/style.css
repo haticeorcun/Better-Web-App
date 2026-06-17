@@ -1,0 +1,623 @@
+/* Applique border-box à tous les éléments : la taille inclut le padding et la bordure */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* Date de référence affichée en haut à droite */
+.barre_date {
+    position: absolute; /* placé par rapport à la page */
+    top: 30px;
+    right: 24px;
+    font-size: 22px;
+    font-weight: 700;
+    color: #6c5ce7;
+    letter-spacing: 1px;
+    z-index: 999; /* au-dessus de tous les autres éléments */
+}
+
+/* Style général de la page */
+body {
+    font-family: 'Arial', sans-serif;
+    /* Dégradé de fond : bleu clair → violet clair → rose clair */
+    background: linear-gradient(160deg, #e8f0fe 0%, #f3e8ff 50%, #fce4ec 100%);
+    background-attachment: fixed; /* le fond reste fixe quand on scrolle */
+    min-height: 100vh; /* occupe au minimum toute la hauteur de l'écran */
+}
+
+/* =====================
+   LAYOUT 3 COLONNES
+   ===================== */
+.app_layout {
+    display: grid; /* active le mode grille CSS */
+    /* 3 colonnes : 380px fixe | contenu flexible | 380px fixe */
+    grid-template-columns: 380px 1fr 380px;
+    align-items: start; /* les colonnes commencent en haut */
+}
+
+/* =====================
+   SIDEBAR GAUCHE
+   ===================== */
+.sidebar {
+    background: transparent;
+    padding: 24px 16px;
+    display: flex;
+    flex-direction: column; /* empile les éléments verticalement */
+    gap: 22px; /* espace entre chaque card */
+    min-height: 100vh;
+    overflow-y: auto; /* scrollbar si le contenu dépasse */
+}
+
+/* Logo BETTER en haut de la sidebar */
+.logo {
+    font-size: 1.4em;
+    font-weight: bold;
+    color: #6c5ce7;
+    letter-spacing: 2px;
+    padding: 4px 0 8px 0;
+}
+
+/* Card blanche du profil */
+.card_profil {
+    background: white;
+    border-radius: 18px;
+    padding: 18px 14px;
+    text-align: center;
+}
+
+/* Conteneur qui englobe l'avatar et le crayon ✏️ */
+/* position: relative permet de positionner le crayon par rapport à l'avatar */
+.avatar_wrapper { position: relative; display: inline-block; margin-bottom: 10px; }
+
+/* Image de l'avatar */
+.avatar_img {
+    width: 84px; height: 84px;
+    border-radius: 50%; /* forme ronde */
+    object-fit: cover; /* l'image remplit le cercle sans se déformer */
+    border: 3px solid #6c5ce7;
+}
+
+/* Crayon ✏️ positionné en bas à droite de l'avatar */
+.avatar_edit {
+    position: absolute; bottom: 0; right: 0;
+    background: white; border-radius: 50%;
+    width: 26px; height: 26px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    text-decoration: none;
+}
+
+.card_nom { font-weight: bold; font-size: 22px; color: #1a1a2e; margin-bottom: 6px; }
+
+/* Badge caché volontairement */
+.card_badge { display: none; }
+
+/* Bouton "Mon profil" avec dégradé violet → bleu */
+.bouton_mon_profil {
+    display: inline-block;
+    margin: 8px auto 4px auto;
+    padding: 12px 36px;
+    background: linear-gradient(135deg, #6c5ce7, #4a90e2);
+    color: white;
+    text-decoration: none;
+    border-radius: 20px; /* style "pill" très arrondi */
+    font-size: 16px;
+    font-weight: 600;
+    box-shadow: 0 3px 10px rgba(108,92,231,0.3);
+    transition: transform 0.2s; /* animation fluide au survol */
+}
+/* Légère élévation au survol */
+.bouton_mon_profil:hover { transform: translateY(-2px); }
+
+.card_niveau { font-size: 22px; color: #555; margin-bottom: 7px; font-weight: 600; }
+
+/* Barre XP : fond gris avec partie violette proportionnelle au score */
+.card_barre { width: 60%; height: 6px; background: #ede9f8; border-radius: 6px; overflow: hidden; margin: 4px auto 3px auto; }
+.card_progression { height: 100%; background: linear-gradient(90deg, #6c5ce7, #4a90e2); border-radius: 6px; transition: width 0.4s; }
+
+.card_xp { font-size: 16px; color: #999; margin-bottom: 12px; text-align: center; }
+
+/* Card blanche générique utilisée pour humeur, streak, énergie */
+.card_section {
+    background: white;
+    border-radius: 16px;
+    padding: 36px 32px;
+    box-shadow: 0 2px 10px rgba(108,92,231,0.07);
+}
+
+.section_titre { font-weight: bold; font-size: 24px; color: #1a1a2e; margin-bottom: 2px; text-align: center; font-family: Arial, sans-serif; letter-spacing: 1px; }
+.section_sous_titre { font-size: 18px; color: #bbb; margin-bottom: 8px; font-style: italic; text-align: center; }
+
+/* =====================
+   HUMEUR SIDEBAR
+   ===================== */
+.form_humeur_sidebar { display: flex; flex-direction: column; gap: 5px; }
+
+/* Bouton d'humeur dans la sidebar */
+.bouton_humeur_sidebar {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 10px;
+    background: #f7f5ff; border: 1.5px solid #ede9f8;
+    border-radius: 10px; cursor: pointer;
+    font-size: 16px; color: #3d2e8a;
+    transition: all 0.2s; text-align: left; width: 100%;
+}
+
+.bouton_humeur_sidebar:hover { border-color: #6c5ce7; background: #ede9f8; transform: translateX(2px); }
+/* !important force la règle même si d'autres styles s'appliquent */
+.humeur_active { border-color: #6c5ce7 !important; background: #ede9f8 !important; font-weight: bold; }
+.humeur_choisie { margin-top: 6px; font-size: 15px; color: #6c5ce7; font-style: italic; text-align: center; }
+
+/* =====================
+   STREAK (jours consécutifs)
+   ===================== */
+.streak_nombre { font-size: 2em; font-weight: bold; color: #1a1a2e; text-align: center; margin: 5px 0 2px 0; }
+/* "jours" en plus petit à côté du nombre */
+.streak_nombre span { font-size: 0.45em; color: #999; font-weight: normal; }
+.streak_message { font-size: 19px; color: #6c5ce7; text-align: center; margin-bottom: 10px; }
+
+/* Ligne des 7 cercles de la semaine */
+.streak_semaine { display: flex; justify-content: space-between; gap: 3px; }
+.streak_jour { display: flex; flex-direction: column; align-items: center; gap: 3px; flex: 1; }
+
+/* Cercle de chaque jour */
+.streak_cercle {
+    width: 28px; height: 28px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: bold; color: white;
+}
+
+.streak_fait { background: #6c5ce7; color: white; } /* jour coché : violet */
+.streak_aujourdhui { background: linear-gradient(135deg, #6c5ce7, #4a90e2); box-shadow: 0 0 8px rgba(108,92,231,0.4); } /* aujourd'hui non coché */
+.streak_passe { background: #888; } /* jour passé non coché : gris foncé */
+.streak_futur { background: #e8e8e8; } /* jour futur : gris très clair */
+.streak_jour span { font-size: 16px; color: #bbb; }
+
+/* Bouton de déconnexion rouge transparent */
+.lien_deco {
+    display: block; text-align: center; padding: 12px;
+    margin-top: 8px;
+    background: rgba(231,76,60,0.08); color: #e74c3c;
+    border-radius: 10px; text-decoration: none; font-size: 16px;
+    transition: background 0.2s;
+}
+.lien_deco:hover { background: rgba(231,76,60,0.16); }
+
+/* =====================
+   CONTENU PRINCIPAL (colonne centrale)
+   ===================== */
+.main_content {
+    padding: 80px 20px 20px 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Image hero avec coins arrondis et ombre */
+.hero_image {
+    position: relative; border-radius: 18px; overflow: hidden;
+    margin-bottom: 20px; box-shadow: 0 6px 24px rgba(0,0,0,0.15);
+}
+
+/* L'image prend toute la largeur, limitée à 250px de hauteur */
+.img_hero { width: 100%; display: block; max-height: 250px; object-fit: cover; }
+
+/* Message du jour caché volontairement */
+.hero_message { display: none; }
+
+.quetes_header { text-align: center; margin-bottom: 0px; }
+.quetes_header h2 { color: #4a3fc7; font-family: Arial, sans-serif; font-size: 2.2em; font-weight: bold; letter-spacing: 2px; margin-bottom: 6px; }
+
+/* Séparateur entre les catégories de quêtes */
+.separateur_categorie {
+    font-size: 16px; letter-spacing: 3px; font-weight: bold;
+    border-bottom: 2px solid currentColor; /* couleur héritée de la catégorie */
+    padding-bottom: 5px; margin: 10px 0 0 0; display: block;
+}
+
+/* Groupe de quêtes d'une catégorie avec coins arrondis et ombre */
+.groupe_quetes {
+    border-radius: 16px;
+    overflow: hidden; /* masque ce qui dépasse pour garder les coins arrondis */
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    margin-bottom: 4px;
+}
+
+/* Carte d'une quête individuelle */
+.carte_quete {
+    display: flex; align-items: center; gap: 18px;
+    background: rgba(255,255,255,0.95);
+    padding: 28px 24px; margin-bottom: 0;
+    border-bottom: 1px solid #f0eeff;
+    transition: background 0.2s;
+}
+.carte_quete:hover { background: #faf8ff; }
+/* Quête cochée : fond légèrement vert et transparence */
+.carte_quete.cochee { background: rgba(240,255,244,0.95); opacity: 0.85; }
+
+/* Le formulaire ne doit pas casser la mise en page de la carte */
+.form_quete { display: contents; }
+
+/* Bouton checkbox : remplace l'ancien input[type=checkbox] */
+.checkbox_quete_btn {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+/* Case non cochée */
+.checkbox_visuel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border: 2.5px solid #d0c8f0;
+    border-radius: 8px;
+    background: white;
+    font-size: 17px;
+    color: white;
+    box-shadow: 0 1px 4px rgba(108,92,231,0.08);
+    transition: background 0.18s, border-color 0.18s, box-shadow 0.18s;
+}
+
+/* Case cochée */
+.checkbox_visuel.checked {
+    background: linear-gradient(135deg, #6c5ce7, #4a90e2);
+    border-color: #6c5ce7;
+    box-shadow: 0 2px 8px rgba(108,92,231,0.35);
+}
+
+.icone_quete { width: 65px; height: 65px; border-radius: 12px; object-fit: cover; flex-shrink: 0; }
+.texte_quete { flex: 1; min-width: 0; } /* flex:1 prend tout l'espace disponible */
+.label_categorie { font-size: 17px; font-weight: bold; letter-spacing: 1px; }
+.titre_quete { font-weight: bold; margin: 4px 0; color: #231970; font-size: 26px; }
+/* Texte tronqué avec ... si trop long */
+.desc_quete { font-size: 20px; color: #999; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.points_quete { display: flex; align-items: center; gap: 4px; font-size: 22px; flex-shrink: 0; white-space: nowrap; }
+.etoile_quete { width: 28px; height: 28px; }
+
+/* =====================
+   SIDEBAR DROITE
+   ===================== */
+.sidebar_droite {
+    background: transparent;
+    padding: 80px 16px 24px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    min-height: 100vh;
+}
+
+/* Cercle SVG de progression */
+.progression_cercle_wrapper {
+    position: relative;
+    width: 110px; height: 110px;
+    margin: 12px auto 6px auto;
+}
+
+.progression_cercle { width: 110px; height: 110px; }
+
+/* Texte "Niveau X" centré dans le cercle */
+.progression_cercle_texte {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%); /* centrage parfait */
+    text-align: center;
+    line-height: 1.1;
+}
+
+.prog_niveau { display: block; font-size: 14px; color: #999; }
+.prog_num { display: block; font-size: 2.4em; font-weight: bold; color: #231970; }
+
+.prog_xp_texte { text-align: center; font-size: 20px; color: #999; margin-bottom: 3px; }
+.prog_next { text-align: center; font-size: 19px; color: #6c5ce7; margin-bottom: 10px; }
+
+/* Barre de progression des quêtes du jour */
+.prog_quetes_jour { margin-top: 8px; }
+.prog_quetes_label { font-size: 19px; color: #888; margin-bottom: 5px; text-align: center; }
+.prog_quetes_barre_wrap { display: flex; align-items: center; gap: 8px; }
+.prog_quetes_barre { flex: 1; height: 8px; background: #ede9f8; border-radius: 6px; overflow: hidden; }
+.prog_quetes_fill { height: 100%; background: linear-gradient(90deg, #6c5ce7, #4a90e2); border-radius: 6px; transition: width 0.4s; }
+.prog_quetes_count { font-size: 15px; color: #888; flex-shrink: 0; }
+
+/* Barre d'énergie du jour */
+.energie_barre_wrap { display: flex; align-items: center; gap: 8px; margin: 8px 0 6px 0; }
+.energie_barre { flex: 1; height: 10px; background: #ede9f8; border-radius: 6px; overflow: hidden; }
+.energie_fill { height: 100%; background: linear-gradient(90deg, #6c5ce7, #4a90e2); border-radius: 6px; transition: width 0.4s; }
+.energie_val { font-size: 19px; color: #888; flex-shrink: 0; }
+.energie_message { font-size: 20px; color: #6c5ce7; font-style: italic; }
+
+/* =====================
+   FOOTER
+   ===================== */
+/* grid-column: 1 / -1 fait que le footer s'étend sur toutes les colonnes */
+footer { text-align: center; padding: 14px; color: #bbb; font-size: 12px; grid-column: 1 / -1; }
+
+/* =====================
+   POPUPS
+   ===================== */
+
+/* Fond noir semi-transparent qui couvre toute la page */
+.popup_overlay {
+    position: fixed; /* reste fixe même si on scrolle */
+    top: 0; left: 0; /* collé en haut à gauche */
+    width: 100%; height: 100%; /* couvre toute la page */
+    background: rgba(0,0,0,0.55); /* noir à 55% d'opacité */
+    display: flex; justify-content: center; align-items: center; /* centre le contenu */
+    z-index: 999; /* au-dessus de tout */
+}
+
+/* Boite blanche arrondie du popup humeur */
+.popup_humeur_contenu {
+    background: white; border-radius: 24px;
+    padding: 40px 36px; text-align: center;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+    max-width: 380px;
+    width: 90%; /* responsive sur mobile */
+}
+
+.popup_emoji { font-size: 2.5em; display: block; margin-bottom: 10px; }
+.popup_humeur_contenu h2 { color: #231970; margin-bottom: 6px; font-family: Georgia, serif; }
+.popup_sous_titre { color: #999; font-size: 14px; margin-bottom: 20px; }
+
+.form_humeur_popup { display: flex; flex-direction: column; gap: 10px; }
+
+/* Bouton d'humeur dans le popup */
+.bouton_humeur_popup {
+    display: flex; align-items: center; gap: 14px;
+    padding: 12px 18px; background: #f7f5ff;
+    border: 2px solid #ede9f8; border-radius: 14px;
+    cursor: pointer; transition: all 0.2s;
+    width: 100%; text-align: left;
+}
+
+.bouton_humeur_popup:hover { border-color: #6c5ce7; background: #ede9f8; transform: translateX(4px); }
+.humeur_emoji { font-size: 1.6em; }
+.humeur_label { font-size: 15px; color: #3d2e8a; font-weight: 500; }
+
+/* Popup de passage de niveau */
+.popup_contenu {
+    background: white; border-radius: 20px; padding: 40px;
+    text-align: center; box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+    max-width: 360px; width: 90%;
+}
+
+.popup_contenu h2 { color: #231970; margin-bottom: 10px; }
+.popup_contenu button {
+    margin-top: 20px; padding: 10px 30px;
+    background: #6c5ce7; color: white;
+    border: none; border-radius: 8px;
+    font-size: 1em; cursor: pointer;
+}
+
+/* =====================
+   AUTH (connexion / inscription)
+   ===================== */
+/* Centre la carte de connexion verticalement et horizontalement */
+.page_auth { display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+
+.carte_auth {
+    background: white; padding: 40px; border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    width: 100%; max-width: 400px; text-align: center;
+}
+
+.carte_auth h1 { color: #6c5ce7; font-size: 2em; margin-bottom: 5px; }
+.carte_auth label { display: block; text-align: left; margin-top: 15px; margin-bottom: 5px; font-weight: bold; }
+.carte_auth input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 1em; box-sizing: border-box; }
+.carte_auth button { width: 100%; margin-top: 20px; padding: 12px; background: #6c5ce7; color: white; border: none; border-radius: 8px; font-size: 1em; cursor: pointer; }
+.carte_auth button:hover { background: #5a4bd1; }
+.erreur_auth { color: red; margin-bottom: 10px; }
+.lien_auth { margin-top: 15px; font-size: 0.9em; }
+.lien_auth a { color: #6c5ce7; }
+
+/* =====================
+   AVATARS (page profil)
+   ===================== */
+.grille_avatars { display: flex; flex-wrap: wrap; gap: 15px; margin: 20px 0; }
+.carte_avatar { cursor: pointer; border-radius: 50%; border: 3px solid transparent; overflow: hidden; width: 80px; height: 80px; }
+.carte_avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+.carte_avatar.selectionne { border-color: #6c5ce7; }
+.carte_avatar input { display: none; }
+.section_profil { padding: 20px; text-align: center; }
+
+/* =====================
+   PAGE PROFIL
+   ===================== */
+.profil_layout {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 20px;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 24px;
+}
+
+.profil_sidebar { display: flex; flex-direction: column; gap: 16px; }
+
+.profil_card {
+    background: rgba(255,255,255,0.96);
+    border-radius: 20px; padding: 24px 20px;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(108,92,231,0.1);
+}
+
+.profil_avatar_wrap { position: relative; display: inline-block; margin-bottom: 14px; }
+
+.profil_avatar_img {
+    width: 110px; height: 110px;
+    border-radius: 50%; object-fit: cover;
+    border: 4px solid #6c5ce7;
+}
+
+.profil_nom { font-size: 1.4em; font-weight: bold; color: #1a1a2e; margin-bottom: 6px; }
+.profil_email { font-size: 12px; color: #aaa; margin-bottom: 10px; }
+
+.profil_badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #6c5ce7, #4a90e2);
+    color: white; font-size: 12px;
+    padding: 4px 16px; border-radius: 20px; margin-bottom: 16px;
+}
+
+/* Barre XP du profil */
+.profil_xp_bloc { margin-bottom: 16px; }
+.profil_xp_label { display: flex; justify-content: space-between; font-size: 12px; color: #888; margin-bottom: 5px; }
+.profil_barre { width: 100%; height: 10px; background: #ede9f8; border-radius: 6px; overflow: hidden; }
+.profil_prog { height: 100%; background: linear-gradient(90deg, #6c5ce7, #4a90e2); border-radius: 6px; }
+
+/* Grille des 4 stats (points, série, quêtes, humeur) */
+.profil_stats_grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 4px; }
+.profil_stat_item { background: #f7f5ff; border-radius: 12px; padding: 12px 8px; text-align: center; }
+.profil_stat_emoji { font-size: 1.4em; display: block; margin-bottom: 4px; }
+.profil_stat_val { font-size: 1.4em; font-weight: bold; color: #231970; }
+.profil_stat_nom { font-size: 11px; color: #aaa; }
+
+.profil_main { display: flex; flex-direction: column; gap: 18px; }
+
+/* Section blanche du profil */
+.profil_section {
+    background: rgba(255,255,255,0.96);
+    border-radius: 20px; padding: 22px 24px;
+    box-shadow: 0 4px 16px rgba(108,92,231,0.08);
+}
+
+.profil_section h2 {
+    color: #231970; font-family: Georgia, serif;
+    font-size: 1.1em; margin-bottom: 16px;
+    border-bottom: 2px solid #ede9f8; padding-bottom: 8px;
+}
+
+/* Grille des stats par catégorie */
+.cats_grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.cat_card {
+    border-radius: 14px; padding: 14px 16px;
+    display: flex; align-items: center; gap: 12px;
+}
+
+.cat_card img { width: 42px; height: 42px; border-radius: 10px; object-fit: cover; }
+.cat_card_info { flex: 1; }
+.cat_card_label { font-size: 11px; font-weight: bold; letter-spacing: 1px; }
+.cat_card_nb { font-size: 1.3em; font-weight: bold; color: #231970; }
+.cat_card_texte { font-size: 11px; color: #aaa; }
+
+/* Graphique camembert */
+.graphique_wrap { display: flex; align-items: center; gap: 30px; }
+#camembert { flex-shrink: 0; }
+.legende_graph { flex: 1; }
+.legende_item { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 13px; color: #231970; }
+.legende_couleur { width: 14px; height: 14px; border-radius: 4px; flex-shrink: 0; }
+.legende_pct { margin-left: auto; font-weight: bold; color: #6c5ce7; }
+
+/* Grille de choix d'avatar */
+.avatars_grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; }
+.avatar_choix {
+    cursor: pointer; border-radius: 50%;
+    border: 3px solid transparent; overflow: hidden;
+    width: 70px; height: 70px;
+    transition: border-color 0.2s, transform 0.2s;
+}
+.avatar_choix img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+.avatar_choix.selectionne { border-color: #6c5ce7; transform: scale(1.08); }
+.avatar_choix:hover { border-color: #b8a9f5; transform: scale(1.05); }
+
+/* Bouton retour */
+.retour_btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 20px; background: rgba(108,92,231,0.1);
+    color: #6c5ce7; text-decoration: none;
+    border-radius: 12px; font-size: 14px; transition: background 0.2s;
+}
+.retour_btn:hover { background: rgba(108,92,231,0.2); }
+
+.footer_profil { text-align: center; padding: 16px; color: #bbb; font-size: 12px; }
+.profil_padding { padding: 16px 24px; }
+.avatar_input_cache { display: none; }
+.profil_stat_humeur { font-size: 0.9em; }
+.texte_vide_profil { color: #bbb; font-style: italic; font-size: 14px; }
+
+/* =====================
+   PAGE ADMIN
+   ===================== */
+.admin_body { background-image: none; background-color: #f4f2ff; }
+
+.admin_layout { max-width: 1100px; margin: 0 auto; padding: 24px; }
+
+.admin_header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 28px;
+}
+
+.admin_header h1 { color: #231970; font-family: Arial, sans-serif; font-size: 1.8em; font-weight: bold; letter-spacing: 1px; }
+
+.admin_header_links { display: flex; gap: 12px; align-items: center; }
+.admin_header_links a { color: #6c5ce7; text-decoration: none; font-size: 13px; }
+.lien_logout { color: #e74c3c !important; }
+
+/* Grille des 4 stats admin */
+.admin_grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+
+.stat_card {
+    background: white; border-radius: 16px; padding: 18px;
+    text-align: center; box-shadow: 0 2px 12px rgba(108,92,231,0.08);
+}
+
+.stat_emoji { font-size: 1.8em; display: block; margin-bottom: 6px; }
+.stat_big { font-size: 2em; font-weight: bold; color: #231970; }
+.stat_label { font-size: 12px; color: #aaa; margin-top: 3px; }
+
+/* Section blanche admin */
+.admin_section {
+    background: white; border-radius: 16px; padding: 20px;
+    margin-bottom: 20px; box-shadow: 0 2px 12px rgba(108,92,231,0.06);
+}
+
+.admin_section h2 {
+    color: #231970; font-family: Arial, sans-serif; font-size: 1.1em; font-weight: bold; letter-spacing: 1px;
+    margin-bottom: 14px; border-bottom: 2px solid #ede9f8; padding-bottom: 8px;
+}
+
+/* Tableau des utilisateurs */
+.user_table { width: 100%; border-collapse: collapse; }
+.user_table th { text-align: left; padding: 10px; font-size: 11px; color: #aaa; letter-spacing: 1px; border-bottom: 1px solid #f0eeff; }
+.user_table td { padding: 10px; font-size: 13px; color: #231970; border-bottom: 1px solid #f7f5ff; vertical-align: middle; }
+.user_table tr:hover td { background: #faf9ff; }
+
+.user_avatar_mini { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; border: 2px solid #ede9f8; }
+
+.badge_admin { background: #e74c3c; color: white; font-size: 10px; padding: 2px 8px; border-radius: 10px; }
+.badge_user { background: #6c5ce7; color: white; font-size: 10px; padding: 2px 8px; border-radius: 10px; }
+
+/* Boutons d'action admin */
+.btn_action { padding: 5px 9px; border: none; border-radius: 7px; cursor: pointer; font-size: 11px; transition: opacity 0.2s; }
+.btn_reinit { background: #f39c12; color: white; }
+.btn_suppr { background: #e74c3c; color: white; }
+.btn_score { background: #6c5ce7; color: white; }
+.btn_date { background: #27ae60; color: white; }
+.btn_action:hover { opacity: 0.8; }
+
+.input_mini { padding: 4px 7px; border: 1px solid #ddd; border-radius: 6px; font-size: 11px; width: 70px; }
+.input_date { width: 115px; }
+
+.message_ok { background: #d4edda; color: #155724; border-radius: 10px; padding: 12px 16px; margin-bottom: 16px; font-size: 13px; }
+.message_err { background: #f8d7da; color: #721c24; border-radius: 10px; padding: 12px 16px; margin-bottom: 16px; font-size: 13px; }
+
+/* Badges des catégories */
+.categories_grid { display: flex; gap: 10px; flex-wrap: wrap; }
+.categorie_badge { padding: 9px 14px; border-radius: 12px; font-size: 13px; font-weight: bold; }
+.cat_social { background: rgba(108,92,231,0.1); color: #6c5ce7; }
+.cat_mental { background: rgba(74,144,226,0.1); color: #4a90e2; }
+.cat_ecologie { background: rgba(39,174,96,0.1); color: #27ae60; }
+.cat_physique { background: rgba(230,126,34,0.1); color: #e67e22; }
+
+/* Stats des humeurs */
+.humeurs_grid { display: flex; gap: 12px; flex-wrap: wrap; }
+.humeur_stat { text-align: center; padding: 10px 14px; background: #f7f5ff; border-radius: 12px; }
+.h_emoji { font-size: 1.8em; display: block; }
+.h_nb { font-weight: bold; color: #231970; font-size: 15px; }
+.h_label { font-size: 11px; color: #aaa; }
+
+.texte_vide { color: #bbb; font-style: italic; font-size: 13px; }
+.td_email { color: #aaa; font-size: 11px; }
+
